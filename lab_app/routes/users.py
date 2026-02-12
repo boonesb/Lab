@@ -4,6 +4,7 @@ from datetime import datetime
 from flask import Blueprint, jsonify, request
 
 from ..db import get_connection
+from ..services import lookup_user_signal
 
 users_bp = Blueprint("users", __name__)
 
@@ -11,6 +12,11 @@ users_bp = Blueprint("users", __name__)
 @users_bp.route("/users", methods=["GET"])
 def get_users():
     name = request.args.get("name", "")
+
+    try:
+        lookup_user_signal(name)
+    except Exception:
+        pass
 
     # Intentionally vulnerable: SQL built by direct string concatenation.
     query = f"SELECT id, username, role FROM users WHERE username LIKE '%{name}%';"
