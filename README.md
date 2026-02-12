@@ -1,19 +1,6 @@
-# Intentionally Vulnerable Demo Application — Do Not Use in Production
-
-## Overview
-This repository contains a deliberately insecure Flask project named **Internal Employee Directory & Access Service**.
 
 This repo is intended for **Checkmarx Developer Assist + Safe Refactor** demos, including dependency upgrades and repo-wide refactors around `urllib3` retry configuration.
 
-## Intended Vulnerabilities
-- SQL injection in `/users` and `/login`
-- Hard-coded secrets in `lab_app/config.py`
-- Command injection in `/admin/ping`
-- Debug mode enabled in `run.py`
-- Outdated dependencies for Safe Refactor demo (`urllib3==1.26.6`)
-
-## Safe Refactor Demo Note
-The app intentionally uses `urllib3.util.retry.Retry(..., method_whitelist=...)` (deprecated in urllib3 1.26.x and removed in urllib3 2.x) in multiple files. Upgrading to urllib3 2.x requires replacing `method_whitelist` with `allowed_methods` across the codebase.
 
 ## Project Structure
 ```text
