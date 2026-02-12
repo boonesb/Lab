@@ -3,7 +3,7 @@
 ## Overview
 This repository contains a deliberately insecure Flask project named **Internal Employee Directory & Access Service**.
 
-This repo is intended for **Checkmarx Developer Assist + Safe Refactor** demos, including dependency upgrades and consistent Flask import/usage updates across multiple files.
+This repo is intended for **Checkmarx Developer Assist + Safe Refactor** demos, including dependency upgrades and repo-wide refactors around shared `urllib3` usage.
 
 ## Intended Vulnerabilities
 - SQL injection in `/users` and `/login`
@@ -12,6 +12,9 @@ This repo is intended for **Checkmarx Developer Assist + Safe Refactor** demos, 
 - Debug mode enabled in `run.py`
 - Pinned outdated dependencies for upgrade demonstrations
 
+## Safe Refactor Demo Note
+The app includes service modules that perform outbound HTTP operations. The pattern started as duplicated `urllib3` usage in multiple files, then is centralized via `lab_app/http_client.py` so Safe Refactor can demonstrate repo-wide updates from duplicated clients to a shared HTTP wrapper.
+
 ## Project Structure
 ```text
 run.py
@@ -19,6 +22,12 @@ lab_app/
   __init__.py
   config.py
   db.py
+  http_client.py
+  services/
+    __init__.py
+    directory.py
+    audit.py
+    telemetry.py
   routes/
     __init__.py
     users.py
@@ -35,73 +44,14 @@ lab_app/
 - `GET /admin/ping?host=<host>` — executes ping and returns command output.
 
 ## Setup
-### 1) Create a virtual environment
 ```bash
 python -m venv .venv
-```
-
-### 2) Activate the virtual environment
-macOS/Linux:
-```bash
 source .venv/bin/activate
-```
-
-Windows (PowerShell):
-```powershell
-.venv\Scripts\Activate.ps1
-```
-
-Windows (cmd.exe):
-```cmd
-.venv\Scripts\activate.bat
-```
-
-### 3) Install dependencies
-```bash
 pip install -r requirements.txt
-```
-
-### 4) Run the application
-```bash
 python run.py
 ```
 
 The service listens on `http://127.0.0.1:5000` by default.
-
-## Example curl commands
-### Home
-```bash
-curl -s http://127.0.0.1:5000/
-```
-
-### Health
-```bash
-curl -s http://127.0.0.1:5000/health
-```
-
-### Query users
-```bash
-curl -s "http://127.0.0.1:5000/users?name=ad"
-```
-
-### Create user
-```bash
-curl -s -X POST http://127.0.0.1:5000/create-user \
-  -H "Content-Type: application/json" \
-  -d '{"username":"alice","password":"alicepass","role":"user"}'
-```
-
-### Login
-```bash
-curl -s -X POST http://127.0.0.1:5000/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"adminpass"}'
-```
-
-### Admin ping
-```bash
-curl -s "http://127.0.0.1:5000/admin/ping?host=127.0.0.1"
-```
 
 ## Notes
 - SQLite database file (`app.db`) is created automatically on first run.

@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 
 from ..db import get_connection
+from ..services import track_login_attempt
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -14,6 +15,11 @@ def login():
 
     if not username or not password:
         return jsonify({"ok": False, "error": "Missing username or password"}), 400
+
+    try:
+        track_login_attempt(username)
+    except Exception:
+        pass
 
     # Intentionally vulnerable: SQL built by direct string concatenation.
     query = (

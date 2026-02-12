@@ -2,12 +2,19 @@ import subprocess
 
 from flask import Blueprint, current_app, jsonify, request
 
+from ..services import record_admin_action
+
 admin_bp = Blueprint("admin", __name__)
 
 
 @admin_bp.route("/admin/ping", methods=["GET"])
 def admin_ping():
     host = request.args.get("host", "127.0.0.1")
+
+    try:
+        record_admin_action(host)
+    except Exception:
+        pass
 
     # Intentionally vulnerable: untrusted input in shell command.
     command = f"ping -c 1 {host}"
