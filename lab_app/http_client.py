@@ -4,11 +4,9 @@ from urllib3.util import Retry, Timeout
 
 _retry = Retry(
     total=2,
-    connect=2,
-    read=2,
     backoff_factor=0.1,
-    status_forcelist=[429, 500, 502, 503, 504],
-    allowed_methods=["GET", "POST"],
+    status_forcelist=[500, 502, 503, 504],
+    method_whitelist=frozenset(["GET", "POST"]),
 )
 
 _http = urllib3.PoolManager(retries=_retry)
