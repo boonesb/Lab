@@ -3,17 +3,36 @@
 ## Overview
 This repository contains a deliberately insecure Flask project named **Internal Employee Directory & Access Service**.
 
-This repo is intended for **demo and training use only** with **Checkmarx Developer Assist** and **Safe Refactor**.
-It intentionally contains vulnerabilities and insecure coding patterns for scanner detection and remediation workflow demonstrations.
-It must **not** be deployed to any real environment and must **not** be used with real data.
+This repo is intended for **Checkmarx Developer Assist + Safe Refactor** demos, including dependency upgrades and consistent Flask import/usage updates across multiple files.
 
-## What this app does
-The API provides a small local employee directory and access service backed by SQLite:
+## Intended Vulnerabilities
+- SQL injection in `/users` and `/login`
+- Hard-coded secrets in `lab_app/config.py`
+- Command injection in `/admin/ping`
+- Debug mode enabled in `run.py`
+- Pinned outdated dependencies for upgrade demonstrations
 
-- `GET /users?name=<name>` — list matching users.
-- `POST /create-user` — create a user.
-- `POST /login` — validate username/password.
-- `GET /admin/ping?host=<host>` — run a ping command.
+## Project Structure
+```text
+run.py
+lab_app/
+  __init__.py
+  config.py
+  db.py
+  routes/
+    __init__.py
+    users.py
+    auth.py
+    admin.py
+```
+
+## API Endpoints
+- `GET /` — home/health-style summary with endpoint list.
+- `GET /health` — service status.
+- `GET /users?name=<name>` — returns matching users (`id`, `username`, `role`).
+- `POST /create-user` — JSON: `{ "username": "...", "password": "...", "role": "..." }`.
+- `POST /login` — JSON: `{ "username": "...", "password": "..." }`.
+- `GET /admin/ping?host=<host>` — executes ping and returns command output.
 
 ## Setup
 ### 1) Create a virtual environment
@@ -44,13 +63,18 @@ pip install -r requirements.txt
 
 ### 4) Run the application
 ```bash
-python app.py
+python run.py
 ```
 
-The service listens on `http://127.0.0.1:5000`.
+The service listens on `http://127.0.0.1:5000` by default.
 
 ## Example curl commands
-### Health check
+### Home
+```bash
+curl -s http://127.0.0.1:5000/
+```
+
+### Health
 ```bash
 curl -s http://127.0.0.1:5000/health
 ```
@@ -84,4 +108,4 @@ curl -s "http://127.0.0.1:5000/admin/ping?host=127.0.0.1"
 - On first startup, two users are seeded:
   - `admin / adminpass / admin`
   - `user / userpass / user`
-- Passwords are stored in plaintext in this demo by design.
+- Passwords are stored in plaintext intentionally for demonstration purposes.
